@@ -56,7 +56,6 @@ export class Table extends MobxLitElement {
     super();
   }
 
-
   override render() {
     const {idxsShown, loading} = state;
     if (loading) return '';
@@ -72,16 +71,16 @@ export class Table extends MobxLitElement {
   }
 
   private renderCell(example: string) {
-    const {selectedEntity} = state;
-    if (selectedEntity) {
-      const htmlPieces: TemplateResult[] = [];
-      const textSections = example.toLowerCase().split(selectedEntity);
-      textSections.forEach((section, i) => {
-        htmlPieces.push(html`${section}`);
-        // Unless we're at the last instance.
-        if (i < textSections.length - 1) {
-          htmlPieces.push(html`<span class='token'>${selectedEntity}</span>`);
+    const {selectedEntities} = state;
+    // Iterate over each token, highlighting those that are selected.
+    if (selectedEntities) {
+      const htmlPieces = example.split(' ').map(token => {
+        for (const selectedEntity of selectedEntities) {
+          if (token.toLowerCase().includes(selectedEntity.toLowerCase())) {
+            return html`<span class='token'>${selectedEntity}</span> `;
+          }
         }
+        return html`${token} `;
       });
       return html`<div class='cell'>${htmlPieces}</div>`;
     }

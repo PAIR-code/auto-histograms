@@ -1,22 +1,33 @@
 # Automatic histograms
 
+
+AutoHistograms is an visualization tool for understanding text datasets. See [Automatic Histograms: Leveraging Language Models for Text Dataset Exploration
+](https://arxiv.org/abs/2402.14880) for more details, or watch our demo video.
+
+<iframe src="https://www.youtube.com/embed/EugsRaGUAYc" width="900" height="480" allow="autoplay; encrypted-media"></iframe>
+
 ## Motivation
+Making sense of unstructured text datasets is a perennially difficult yet increasingly important task with the emergence of large language models. To do so, data practitioners often rely on dataset summaries, especially distributions of various derived features. 
 
-When analyzing an unstructured dataset, it's useful to have histograms over
-features you care about. Sometimes (e.g., with [KYD](https://knowyourdata.withgoogle.com/)), these can be provided out of the
-box by annotating each datapoint.
+Some supervised features, like toxicity or topics, are relevant to many datasets, and there are well-supported  (e.g., with [KYD](https://knowyourdata.withgoogle.com/)) tools for calculating these.
 
-However, user data is so specific that we can't know what sort of categories
-they care about in advance. E.g., a music dataset might want to see a histogram
-over the musicians in the dataset, whereas an RAI fairness dataset might want to
-have a histogram of races represented.
+However, many interesting features are domain specific, e.g., genre or instrumentation for a music dataset, or diseases and symptoms for a medical dataset. Accordingly, data practitioners may run custom analyses for each dataset, which is cumbersome and difficult.
 
+Alternatively, they can use unsupervised methods to understand datasets, but these can be hard to reproduce or interpret. We bridge this gap with AutoHistograms, a visualization tool leveraging LLMs. AutoHistograms automatically identifies relevant entity-based features, visualizes their distributions,and allows the user to interactively query the dataset for new categories of entities. 
+
+
+## How does it work?
 How can we do this automatically? Automatic histograms first finds entities in
 the data, and then groups and labels them (e.g., to group "covid 19" and
-"the flu" under the category "diseases"). 
+"the flu" under the category "diseases"). Finally, they are displayed in the UI. 
+
+<img src="static_images/steps.png" alt="Steps of the AutoHistograms pipeline" width="900"/>
 
 Additionally, we can allow users to search with the fields, e.g., searching for
 "musicians" to create a histogram that they care about in real time.
+
+<img src="static_images/steps_new_histogram.png" alt="Steps to create a new distribution" width="900"/>
+
 
 ## Running instructions
 
@@ -53,7 +64,6 @@ This can also be run programmatically from python (see `run.py`):
 
 ### 2. Viewing the outputs
 
-To run the demo (either for our pre-annotated data, or your own annotated data)
 ### Build the typescript/css/html
 In a separate terminal window, build the typescript.
 ```
@@ -72,5 +82,11 @@ Then navigate to
 `http://localhost:5000/?dir=<your_output_path>`
 
 (If you do not supply a value for `<your_output_path>`, it will default to our demo pre-annotated dataset.)
+
+
+
+
+
+
 
 

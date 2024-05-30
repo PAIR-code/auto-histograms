@@ -73,9 +73,13 @@ export class Histograms extends MobxLitElement {
         text-align: center;
         color: tomato;
         padding-bottom: 9px;
+        cursor: pointer;
+      }
+      .user-created {
+        color: darkred;
       }
       .unhighlighted {
-        color: #666;
+        font-weight: lighter;
       }
       .bar {
         background: lightsalmon;
@@ -126,9 +130,10 @@ export class Histograms extends MobxLitElement {
       if (!entity) return 0;
       return state.idsByEntitity[entity].length;
     };
-    const sortedHistogramKeys =
+
+    const sortedHistogramKeys = state.userCreatedHistogramKeys.concat(
         Object.keys(state.histograms)
-            .sort((a, b) => numEntitiesFirstBin(b) - numEntitiesFirstBin(a));
+            .sort((a, b) => numEntitiesFirstBin(b) - numEntitiesFirstBin(a)));
 
     // Render only the descriptions that contain the current search
     const stringMatchedHistograms = sortedHistogramKeys.filter(
@@ -137,13 +142,14 @@ export class Histograms extends MobxLitElement {
     const searchResults = state.currSearchResults.filter(
         result => !stringMatchedHistograms.includes(result));
     const searchedHistograms = stringMatchedHistograms.concat(searchResults);
+    const finalSortOrder = [...new Set(searchedHistograms)];
 
-    const click = () => state.selectedEntity = '';
+    const click = () => state.selectedEntities = [];
     return html`
         <histogram-search-component></histogram-search-component>
         <div class='all-histograms-holder' @click=${click}>${
         repeat(
-            searchedHistograms, (description) => description,
+            finalSortOrder, (description) => description,
             (description) => this.renderHistogram(description))}</div>`;
   }
 
@@ -167,7 +173,7 @@ export class Histograms extends MobxLitElement {
     const entities = state.histograms[description] || [];
     const counts = entities.map(entity => state.idsByEntitity[entity].length);
     const maxCount = Math.max(...counts);
-    const descriptionHtml = this.renderDescription(description);
+    const descriptionHtml = this.renderDescription(description, entities);
     const buttons = this.renderAcceptDeleteButtons(isPending);
     const entitiesHtml = html`
         <div class='table-holder'>
@@ -190,8 +196,18 @@ export class Histograms extends MobxLitElement {
         </div>`;
   }
 
-  private renderDescription(description: string) {
-    if (!state.currSearch) return html`<div class='title'>${description}</div>`;
+  private renderDescription(description: string, entities: string[]) {
+    const selectAll = (e: Event) => {
+      e.stopPropagation();
+      const alreadySelected = state.selectedEntities === entities;
+      state.selectedEntities = alreadySelected ? [] : entities;
+    };
+
+    const isUserCreated = state.userCreatedHistogramKeys.includes(description);
+    const classes = classMap({'title': true, 'user-created': isUserCreated});
+    if (!state.currSearch)
+      return html`<div class=${classes} @click=${selectAll}>${
+          description}</div>`;
 
     // If there is a current search, highlight the parts of the word that match
     // that search.
@@ -204,7 +220,7 @@ export class Histograms extends MobxLitElement {
         htmlPieces.push(html`<span>${state.currSearch}</span>`);
       }
     });
-    return html`<div class='title'>${htmlPieces}</div>`;
+    return html`<div class=${classes} @click=${selectAll}>${htmlPieces}</div>`;
   }
 
   private renderBar(entity: string, totalWidth: number, isPending: boolean) {
@@ -212,7 +228,7 @@ export class Histograms extends MobxLitElement {
     const width = numExamples / totalWidth * 100;
     const style = styleMap({'width': `${width}px`});
 
-    const isSelected = state.selectedEntity === entity;
+    const isSelected = state.selectedEntities.includes(entity);
     const entityIsPending =
         isPending && state.pendingHistogramEntities.has(entity);
 
@@ -233,7 +249,12 @@ export class Histograms extends MobxLitElement {
     const clicked = (e: Event) => {
       e.stopPropagation();
       if (isPending) return;
-      state.selectedEntity = isSelected ? '' : entity;
+      if (isSelected) {
+        state.selectedEntities.splice(
+            state.selectedEntities.indexOf(entity), 1);
+      } else {
+        state.selectedEntities.push(entity);
+      }
     };
 
     const bar = isPending ?

@@ -57,7 +57,7 @@ export class Search extends MobxLitElement {
   private onKeystroke(e: Event) {
     const target = e.target as HTMLInputElement;
     const search = target.value;
-    state.selectedEntity = '';
+    state.selectedEntities = [];
 
     const searchIfNotStale = () => {
       const freshSearch = target.value;

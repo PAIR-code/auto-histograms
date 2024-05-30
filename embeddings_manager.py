@@ -56,7 +56,7 @@ class DefaultExternalEmbedder(Embedder):
     return np.array(emb)
 
 
-@functools.lru_cache(maxsize=None)
+@memoize.Memoize()
 def _get_universal_encoder():
   tf.enable_v2_behavior()
   return hub.load('https://tfhub.dev/google/universal-sentence-encoder/4')

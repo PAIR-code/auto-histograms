@@ -40,11 +40,13 @@ export class State {
   @observable loading = true;
   @observable currSearch = '';
   @observable currSearchResults: string[] = [];
-  @observable selectedEntity = '';
+  @observable selectedEntities: string[] = [];
+  @observable userCreatedHistogramKeys: string[] = [];
 
   @computed
   get idxsShown(): number[] {
-    return this.idsByEntitity[this.selectedEntity] || [];
+    return this.selectedEntities.flatMap(
+        entity => this.idsByEntitity[entity] || []);
   }
 
   readonly path: string = this.getPathFromUrl();
@@ -89,6 +91,7 @@ export class State {
         (a: string, b: string) =>
             state.idsByEntitity[b].length - state.idsByEntitity[a].length);
     this.histograms[this.pendingHistogram] = entities;
+    this.userCreatedHistogramKeys.push(this.pendingHistogram);
     this.clearPendingHistogram();
   }
   cancelPendingHistogram() {
