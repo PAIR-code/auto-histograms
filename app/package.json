@@ -17,7 +17,7 @@
     "mobx": "^5.15.7",
     "style-loader": "2.0.0",
     "ts-loader": "8.4.0",
-    "webpack": "4.46.0",
+    "webpack": "5.94.0",
     "webpack-cli": "3.3.11",
     "webpack-dev-server": "3.10.3",
     "worker-loader": "2.0.0",
