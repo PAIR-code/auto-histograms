@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 absl-py==2.0.0
-nltk==3.8.1
+nltk==3.9.4
 numpy==1.25.2
 google-generativeai==0.2.0
 scipy==1.11.3
