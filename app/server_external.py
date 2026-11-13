@@ -52,7 +52,7 @@ def main(argv: collections.abc.Sequence[str]) -> None:
         view_func=handler,
         defaults={'request': request, 'handler': default_handler},
     )
-  flask_app.run(debug=True, host='0.0.0.0')
+  flask_app.run(debug=False, host='127.0.0.1')
 
 
 if __name__ == '__main__':
